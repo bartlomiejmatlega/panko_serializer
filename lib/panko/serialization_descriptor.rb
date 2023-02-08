@@ -6,10 +6,10 @@ module Panko
     # Creates new description and apply the options
     # on the new descriptor
     #
-    def self.build(serializer, options = {}, serialization_context = nil)
+    def self.build(serializer, options = {}, serialization_context = nil, is_root_level = true)
       backend = Panko::SerializationDescriptor.duplicate(serializer._descriptor)
 
-      options.merge! serializer.filters_for(options[:context], options[:scope]) if serializer.respond_to? :filters_for
+      options.merge! serializer.filters_for(options[:context], options[:scope]) if serializer.respond_to?(:filters_for) && is_root_level
 
       backend.apply_filters(options)
 
@@ -123,7 +123,7 @@ module Panko
           next Panko::Association.new(
             name,
             association.name_str,
-            Panko::SerializationDescriptor.build(descriptor.type, filters)
+            Panko::SerializationDescriptor.build(descriptor.type, filters, nil, false)
           )
         end
 
